@@ -1,0 +1,77 @@
+﻿@model SurveyViewModel
+@{
+    ViewBag.Title = "Survey";
+}
+
+<style>
+    table, th, td {
+        width: 1000px;
+        height: 50px;
+    }
+</style>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <h5 class="text-right" style="font-size:15px;margin-top:100px;">Welcome, @User.Identity.Name</h5>
+    <h6 class="text-right" style="font-size:15px;"><a asp-action="Logout" asp-controller="Account">Log Out</a></h6>
+}
+
+<form method="post" asp-antiforgery="true" id="frm_submit">
+    <input type="hidden" value="@User.Identity.Name" />
+    <table>
+        <tr class="alert alert-info">
+            <td style="width:11%"><strong>Please Note:</strong></td>
+            <td>
+                Dear eXtollo Instance Administrators,
+                <br />
+                <br />
+                In order to enable outgoing internet traffic from your eXtollo Data Science Virtual Machine (DSVM) or the eXtollo Secure Virtual Machine (SecVM) (e.g. for downloading packages from library like nuget.org or pypi.org) we need to whitelisting the URL entries on the eXtollo internet proxy.
+                <br />
+                <br />
+                To ensure that all whitelisting URL entries are still necessary and in use, a regular review of the list with our Instance Administrators once a year is necessary. Doing so, we have set up a survey identifying which requested URLs are still valid.
+                <br />
+                <br />You may find the below list of whitelisted URL's. Kindly choose if you would like to <strong>'Keep' </strong> or <strong> 'Discard' </strong> each URL.
+                <br />By default, the <strong>Discard</strong> option is pre-selected.
+            </td>
+        </tr>
+    </table>
+    <br /><br /><br />
+    <table cellpadding="30">
+        <tr>
+            <td>
+                <label asp-for="SelectedInstance">Instance-ID<span style="color:red">*</span></label>
+            </td>
+            <td>
+                <select asp-for="SelectedInstance" asp-items="@(new SelectList(ViewBag.ProjectInstance, "Project_Id", "ProjectName"))" id="multipleSelectDropDownList"></select>
+                <span class="field-validation-valid text-danger" asp-validation-for="SelectedInstance"></span>
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="Submit" style="float:right;" class="new-btn" onclick="return confirm ('You are about to submit your input and will not be able to edit after submission. Are you sure?' )" />
+</form>
+
+@section Scripts{
+
+    <script>
+        $(function () {
+            $('#multipleSelectDropDownList').chosen({
+                width: "25%"
+            });
+        })
+    </script>
+    @if (ViewBag.Success != null)
+    {
+        <script>
+           toastr.options.progressBar = true;
+           toastr.options.onHidden = function () { window.location.href = '@Url.Action("Logout", "Account")' }
+           toastr.success("@ViewBag.Success")
+        </script>
+    }
+    else
+    {
+        <script>
+            toastr.options.progressBar = true;
+            toastr.error("@ViewBag.Error")
+        </script>
+    }
+}
