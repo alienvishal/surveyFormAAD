@@ -17,7 +17,7 @@
 }
 
 <form method="post" asp-antiforgery="true" id="frm_submit">
-    <input type="hidden" value="@User.Identity.Name" />
+    <input type="hidden" value="@User.Identity.Name" asp-for="UserId" />
     <table>
         <tr class="alert alert-info">
             <td style="width:11%"><strong>Please Note:</strong></td>
@@ -46,6 +46,36 @@
                 <span class="field-validation-valid text-danger" asp-validation-for="SelectedInstance"></span>
             </td>
         </tr>
+        @if (Model.Questions.Any())
+        {
+            int count = 1;
+            foreach (var question in Model.Questions)
+            {
+                <tr>
+                    <td>
+                        @count : @question.Q_Text
+                        <input type="hidden" asp-for="Questions[count - 1].Q_Id" />
+                        <input type="hidden" asp-for="Questions[count - 1].Q_Text" />
+                    </td>
+                    <td>
+                        <label class="btn btn-primary">
+                            <input asp-for="SelectedAnswer[count - 1]" type="radio" value="@Model.RadioButton[0]" />@Model.RadioButton[0]
+                        </label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label class="btn btn-danger">
+                            <input checked="checked" asp-for="SelectedAnswer[count - 1]" type="radio" value="@Model.RadioButton[1]" /> @Model.RadioButton[1]
+                        </label>
+                    </td>
+                </tr>
+                count++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="2">No Question has been step up</td>
+            </tr>
+        }
     </table>
     <input type="submit" value="Submit" style="float:right;" class="new-btn" onclick="return confirm ('You are about to submit your input and will not be able to edit after submission. Are you sure?' )" />
 </form>
@@ -59,15 +89,21 @@
             });
         })
     </script>
+    @if (ViewBag.AlreadySubmitted != null)
+    {
+        <script>
+           toastr.options.progressBar = true;
+           toastr.success("@ViewBag.AlreadySubmitted")
+        </script>
+    }
     @if (ViewBag.Success != null)
     {
         <script>
            toastr.options.progressBar = true;
-           toastr.options.onHidden = function () { window.location.href = '@Url.Action("Logout", "Account")' }
            toastr.success("@ViewBag.Success")
         </script>
     }
-    else
+    @if(ViewBag.Error != null)
     {
         <script>
             toastr.options.progressBar = true;
