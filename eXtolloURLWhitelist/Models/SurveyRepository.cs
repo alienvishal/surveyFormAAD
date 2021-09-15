@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace eXtolloURLWhitelist.Models
 {
@@ -14,6 +16,18 @@ namespace eXtolloURLWhitelist.Models
         {
             this.surveyDBContext = surveyDBContext;
         }
+
+        public Question DeleteQuestion(int id)
+        {
+            Question question = surveyDBContext.Questions.Find(id);
+            if (question != null)
+            {
+                surveyDBContext.Questions.Remove(question);
+                surveyDBContext.SaveChanges();
+            }
+            return question;
+        }
+
         public List<ProjectInstance> GetAllProjectInstance()
         {
             return surveyDBContext.ProjectInstances.ToList();
@@ -24,9 +38,45 @@ namespace eXtolloURLWhitelist.Models
             return surveyDBContext.Questions.ToList();
         }
 
+        public List<ListUserViewModel> GetAllResult()
+        {
+            var result = surveyDBContext.Questions.GroupJoin(surveyDBContext.Results,
+                                                             q => q.Q_Id,
+                                                             r => r.Q_Id,
+                                                             (Question, Result) => new
+                                                             {
+                                                                 QText = Question.Q_Text,
+                                                                 Answer = Result.Select(x => x.SelectedAnswer)
+                                                             }).AsEnumerable();
+
+            var model = new List<ListUserViewModel>();
+            foreach (var question in result.AsEnumerable())
+            {
+                ListUserViewModel addListUserViewModel = new ListUserViewModel();
+                addListUserViewModel.QText = question.QText;
+                addListUserViewModel.SelectedAnswer = question.Answer.ToList();
+                model.Add(addListUserViewModel);
+            }
+            return model;
+            
+        }
+
         public Question GetQuestionById(int id)
         {
             return surveyDBContext.Questions.Find(id);
+        }
+
+        public bool IsQuestionAdded(AddQuestionViewModel model)
+        {
+            Question question = new Question();
+            question.Q_Text = model.UrlText;
+            var res = surveyDBContext.Questions.Add(question);
+            surveyDBContext.SaveChanges();
+
+            if (res == null)
+                return false;
+
+            return true;
         }
 
         public bool IsSurveyAdded(SurveyViewModel model)
@@ -68,6 +118,14 @@ namespace eXtolloURLWhitelist.Models
                 isSurveyTaken = true;
             }
             return isSurveyTaken;
+        }
+
+        public Question UpdatedQuestion(Question question)
+        {
+            var res = surveyDBContext.Questions.Attach(question);
+            res.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            surveyDBContext.SaveChanges();
+            return question;
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace eXtolloURLWhitelist.Controllers
 {
-    [Authorize]
+    [Authorize("users-only")]
     public class SurveyController:Controller
     {
         private readonly ILogger<SurveyController> logger;
@@ -65,5 +65,6 @@ namespace eXtolloURLWhitelist.Controllers
             ViewBag.ProjectInstance = surveyRepository.GetAllProjectInstance();
             return View(surveyViewModel);
         }
+
     }
 }

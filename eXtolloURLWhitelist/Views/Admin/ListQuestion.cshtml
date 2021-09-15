@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Question>
+
+@{
+    ViewBag.Title = "List Question";
+}
+<h2 style="margin-top:100px;"> List Question </h2>
+<hr />
+<table class="table table-striped">
+    <tr>
+        <th>
+            Question
+        </th>
+        <th>
+            Action
+        </th>
+    </tr>
+    @foreach (var question in Model)
+    {
+        <tr>
+            <td>
+                @question.Q_Text
+            </td>
+            <td>
+                <a asp-controller="Admin" asp-action="Edit" class="btn btn-success" asp-route-id="@question.Q_Id">Edit</a>
+                <a asp-controller="Admin" asp-action="Delete" class="btn btn-danger" asp-route-id="@question.Q_Id"
+                   onclick="return confirm('Are you sure want to Remove the URL @question.Q_Text ?')">Delete</a>
+            </td>
+        </tr>
+    }
+</table>
+
+@section Scripts
+{
+    @if (ViewBag.DeletedURL != null)
+    {
+        <script>
+            toastr.options.progressBar = true;
+            toastr.success("@ViewBag.DeletedURL");
+        </script>
+    }
+}
