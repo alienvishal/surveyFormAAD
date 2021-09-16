@@ -20,20 +20,18 @@
             int discard = 0;
             @foreach (var res in Model)
             {
+
                 <tr>
                     <td>@res.QText</td>
-                    @for (int i = 0; i < res.SelectedAnswer.Count; i++)
-                    {
-                        if (res.SelectedAnswer[i] == "Keep")
-                        {
+                    @if (res.SelectedAnswer == "Keep")
+                     {
                             keep++;
-                        }
+                     }
 
-                        if (res.SelectedAnswer[i] == "Discard")
-                        {
+                     @if (res.SelectedAnswer == "Discard")
+                      {
                             discard++;
-                        }
-                    }
+                      }
                     <td>@keep</td>
                     <td>@discard</td>
                     @{
@@ -41,8 +39,7 @@
                         discard = 0;
                     }
                 </tr>
-
-            }
+             }
         }
         else
         {

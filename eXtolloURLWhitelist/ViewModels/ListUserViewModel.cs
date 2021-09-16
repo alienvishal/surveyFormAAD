@@ -10,7 +10,8 @@ namespace eXtolloURLWhitelist.ViewModels
         public string Email { get; set; }
         public string ProjectInstance { get; set; }
         public string Id { get; set; }
-        public List<string> SelectedAnswer { get; set; }
+        public string SelectedAnswer { get; set; }
+        public List<string> CountSelectedAnswer { get; set; }
         public string QText { get; set; }
     }
 }

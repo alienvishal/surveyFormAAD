@@ -40,21 +40,35 @@ namespace eXtolloURLWhitelist.Models
 
         public List<ListUserViewModel> GetAllResult()
         {
-            var result = surveyDBContext.Questions.GroupJoin(surveyDBContext.Results,
-                                                             q => q.Q_Id,
-                                                             r => r.Q_Id,
-                                                             (Question, Result) => new
-                                                             {
-                                                                 QText = Question.Q_Text,
-                                                                 Answer = Result.Select(x => x.SelectedAnswer)
-                                                             }).AsEnumerable();
+            var questionByResultJoin = (from qes in surveyDBContext.Questions
+                          join res in surveyDBContext.Results
+                          on qes.Q_Id equals res.Q_Id
+                          select new
+                          {
+                              Question = qes.Q_Text,
+                              Answer = res.SelectedAnswer
+                          });
+
+            var result = (from res in questionByResultJoin
+                         group res by new
+                         {
+                             res.Question,
+                             res.Answer
+                         } into grp
+                         orderby grp.Key.Question
+                         select new
+                         {
+                             Q_Text = grp.Key.Question,
+                             Votes = grp.Key.Answer
+                         }).ToList();
 
             var model = new List<ListUserViewModel>();
-            foreach (var question in result.AsEnumerable())
+            foreach (var question in result)
             {
                 ListUserViewModel addListUserViewModel = new ListUserViewModel();
-                addListUserViewModel.QText = question.QText;
-                addListUserViewModel.SelectedAnswer = question.Answer.ToList();
+                addListUserViewModel.QText = question.Q_Text;
+                addListUserViewModel.SelectedAnswer = question.Votes;
+                
                 model.Add(addListUserViewModel);
             }
             return model;
