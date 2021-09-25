@@ -1,0 +1,28 @@
+﻿@using Microsoft.AspNetCore.Authorization;
+@inject IAuthorizationService authorizationService
+@{
+    Layout = null;
+}
+
+@if ((await authorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+{
+    <script type="text/javascript">
+        $(function(){
+          $("#btnRedirect").click(function(){
+            window.location.href = "@Url.Action("AddQuestion","Admin")";
+          });
+        });
+    </script>
+}
+else
+{
+    <script type="text/javascript">
+        $(function(){
+          $("#btnRedirect").click(function(){
+            window.location.href = "@Url.Action("Index","Survey")";
+          });
+        });
+    </script>
+}
+
+

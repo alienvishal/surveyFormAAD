@@ -17,10 +17,9 @@ namespace eXtolloURLWhitelist.Controllers
         {
             this.authorizationService = authorizationService;
         }
-        public async Task<IActionResult> CheckSignInAsync()
+        public IActionResult CheckSignInAsync()
         {
-            var isAuthorized = await authorizationService.AuthorizeAsync(User, "admin-only");
-            return isAuthorized.Succeeded ? RedirectToAction("AddQuestion", "Admin"): RedirectToAction("Index", "Survey");
+            return View();
         }
         public IActionResult AccessDenied()
         {
@@ -29,7 +28,7 @@ namespace eXtolloURLWhitelist.Controllers
 
         public IActionResult Logout()
         {
-            var callbackUrl = "https://localhost:5000/signout-oidc";
+            var callbackUrl = "https://extollosurvey-corpdir.msappproxy.net/?appproxy=logout";
             return SignOut(
                 new AuthenticationProperties { RedirectUri = callbackUrl },
                 OpenIdConnectDefaults.AuthenticationScheme);

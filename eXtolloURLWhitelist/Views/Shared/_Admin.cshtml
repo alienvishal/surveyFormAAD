@@ -97,7 +97,7 @@
     <div class="sidebar">
         <center>
             <img src="~/images/noimage.png" class="profile_image" alt="noimg" />
-            <h4>@User.Identity.Name</h4>
+            <h4>@User.Identity.Name.Split("@")[0]</h4>
         </center>
         <a asp-action="AddQuestion" asp-controller="Admin"><i class="fa fa-desktop"></i><span>Add Question</span></a>
         <a asp-action="ListQuestion" asp-controller="Admin"><i class="fa fa-cogs"></i><span>List Question</span></a>

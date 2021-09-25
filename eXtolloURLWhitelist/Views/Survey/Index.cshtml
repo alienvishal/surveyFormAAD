@@ -12,7 +12,7 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <h5 class="text-right" style="font-size:15px;margin-top:100px;">Welcome, @User.Identity.Name</h5>
+    <h5 class="text-right" style="font-size:15px;margin-top:100px;">Welcome, @User.Identity.Name.Split("@")[0]</h5>
     <h6 class="text-right" style="font-size:15px;"><a asp-action="Logout" asp-controller="Account">Log Out</a></h6>
 }
 

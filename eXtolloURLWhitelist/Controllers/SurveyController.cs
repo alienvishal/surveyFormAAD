@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace eXtolloURLWhitelist.Controllers
 {
-    [Authorize("users-only")]
+    [Authorize(Policy = "Users")]
     public class SurveyController:Controller
     {
         private readonly ILogger<SurveyController> logger;
@@ -25,6 +25,10 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            if (User.Identity.Name == "vishal@apac.corpdir.net")
+            {
+                return RedirectToAction("AddQuestion", "Admin");
+            }
             SurveyViewModel model = new SurveyViewModel
             {
                 Questions = surveyRepository.GetAllQuestion(),
@@ -37,6 +41,11 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpPost]
         public IActionResult Index(SurveyViewModel model)
         {
+            if (User.Identity.Name == "vishal@apac.corpdir.net")
+            {
+                return RedirectToAction("AddQuestion", "Admin");
+            }
+
             if (ModelState.IsValid)
             {
                 bool isSurveyTaken = surveyRepository.IsSurveyTaken(model);

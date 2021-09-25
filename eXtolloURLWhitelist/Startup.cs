@@ -2,13 +2,16 @@ using eXtolloURLWhitelist.Models;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
+using System.Net;
 
 namespace eXtolloURLWhitelist
 {
@@ -24,27 +27,24 @@ namespace eXtolloURLWhitelist
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews(options => 
-            {
+            services.AddControllersWithViews(option => {
                 var policy = new AuthorizationPolicyBuilder()
-                                .RequireAuthenticatedUser()
-                                .Build();
-                options.Filters.Add(new AuthorizeFilter(policy));
+                                 .RequireAuthenticatedUser()
+                                 .Build();
+                option.Filters.Add(new AuthorizeFilter(policy));
             });
+            
             services.AddRazorPages();
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApp(config.GetSection("AzureAD"));
+
             services.AddDbContextPool<SurveyDBContext>(option => option.UseSqlServer(config.GetConnectionString("Survey")));
             services.AddScoped<ISurveyRepository, SurveyRepository>();
-            services.AddAuthorization(options =>
+            services.AddAuthorization(options => 
             {
-                options.AddPolicy("admin-only", p =>
+                options.AddPolicy("Admin", policy =>
                 {
-                    p.RequireClaim("groups", "d83ce8ca-4664-4c5c-a687-43bfb48ff975");
-                });
-
-                options.AddPolicy("users-only", p => {
-                    p.RequireClaim("groups", "6fc0baee-2dc5-4aa3-9cda-feb0e24afe80");
+                    policy.RequireClaim("groups", "316b4979-8b43-462e-a8db-6a53065ca21b");
                 });
             });
         }
@@ -56,9 +56,29 @@ namespace eXtolloURLWhitelist
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler(errorApp =>
+                {
+                    errorApp.Run(async context =>
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError; ;
+                        context.Response.ContentType = "text/html";
+
+                        await context.Response.WriteAsync("<html lang=\"en\"><body>\r\n");
+                        await context.Response.WriteAsync("ERROR!<br><br>\r\n");
+
+                        var exceptionHandlerPathFeature =
+                            context.Features.Get<IExceptionHandlerPathFeature>();
+
+                        await context.Response.WriteAsync(exceptionHandlerPathFeature.Error.Message.ToString());
+                    });
+                });
+                app.UseHsts();
+            }
 
             app.UseStaticFiles();
-            
+
             app.UseHttpsRedirection();
             app.UseRouting();
 
@@ -69,7 +89,7 @@ namespace eXtolloURLWhitelist
             {
                endpoints.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Account}/{action=CheckSignIn}/{Id?}");
+                pattern: "{controller=Account}/{action=CheckSignInAsync}/{Id?}");
                 
                 endpoints.MapRazorPages();
             });

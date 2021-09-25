@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace eXtolloURLWhitelist.Controllers
 {
-    [Authorize("admin-only")]
+    [Authorize(Policy = "Admin")]
     public class AdminController:Controller
     {
         private readonly ILogger<AdminController> logger;
@@ -24,6 +24,10 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpGet]
         public IActionResult AddQuestion()
         {
+            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            {
+                return RedirectToAction("Index", "Survey");
+            }
             return View();
         }
 
@@ -31,6 +35,10 @@ namespace eXtolloURLWhitelist.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddQuestion(AddQuestionViewModel model)
         {
+            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            {
+                return RedirectToAction("Index", "Survey");
+            }
             bool isQuestionAdded = surveyRepository.IsQuestionAdded(model);
             if (isQuestionAdded)
             {
@@ -47,12 +55,20 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpGet]
         public IActionResult ListQuestion()
         {
+            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            {
+                return RedirectToAction("Index", "Survey");
+            }
             return View(surveyRepository.GetAllQuestion());
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
+            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            {
+                return RedirectToAction("Index", "Survey");
+            }
             var question = surveyRepository.GetQuestionById(id);
 
             if (question == null)
@@ -73,6 +89,10 @@ namespace eXtolloURLWhitelist.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(EditQuestionViewModel model)
         {
+            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            {
+                return RedirectToAction("Index", "Survey");
+            }
             if (ModelState.IsValid)
             {
                 var res = surveyRepository.GetQuestionById(model.Q_Id);
@@ -92,6 +112,10 @@ namespace eXtolloURLWhitelist.Controllers
 
         public IActionResult Delete(int id)
         {
+            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            {
+                return RedirectToAction("Index", "Survey");
+            }
             Question delQuestion = surveyRepository.GetQuestionById(id);
             surveyRepository.DeleteQuestion(delQuestion.Q_Id);
             return RedirectToAction("ListQuestion", "Admin");
@@ -100,6 +124,10 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpGet]
         public IActionResult Result()
         {
+            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            {
+                return RedirectToAction("Index", "Survey");
+            }
             return View(surveyRepository.GetAllResult());
         }
     }
