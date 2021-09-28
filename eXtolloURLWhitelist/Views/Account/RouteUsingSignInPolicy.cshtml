@@ -4,6 +4,7 @@
     Layout = null;
 }
 
+
 @if ((await authorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
 {
     <script type="text/javascript">

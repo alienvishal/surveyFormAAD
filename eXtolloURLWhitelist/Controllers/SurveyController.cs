@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace eXtolloURLWhitelist.Controllers
 {
-    [Authorize(Policy = "Users")]
     public class SurveyController:Controller
     {
         private readonly ILogger<SurveyController> logger;

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace eXtolloURLWhitelist.Controllers
 {
-    [Authorize(Policy = "Admin")]
     public class AdminController:Controller
     {
         private readonly ILogger<AdminController> logger;

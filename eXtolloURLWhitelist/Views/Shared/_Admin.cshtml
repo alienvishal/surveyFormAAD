@@ -73,6 +73,8 @@
     </script>
 </head>
 <body>
+    
+
     @{
         string controller = (string)ViewContext.RouteData.Values["controller"];
         string action = (string)ViewContext.RouteData.Values["action"];
@@ -97,7 +99,13 @@
     <div class="sidebar">
         <center>
             <img src="~/images/noimage.png" class="profile_image" alt="noimg" />
-            <h4>@User.Identity.Name.Split("@")[0]</h4>
+            @foreach (var user in User.Claims)
+            {
+                if (user.Type == "name")
+                {
+                    <h4>@user.Value</h4>
+                }
+            }
         </center>
         <a asp-action="AddQuestion" asp-controller="Admin"><i class="fa fa-desktop"></i><span>Add Question</span></a>
         <a asp-action="ListQuestion" asp-controller="Admin"><i class="fa fa-cogs"></i><span>List Question</span></a>

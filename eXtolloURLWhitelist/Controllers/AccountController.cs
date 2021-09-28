@@ -11,16 +11,13 @@ namespace eXtolloURLWhitelist.Controllers
 {
     public class AccountController:Controller
     {
-        private readonly IAuthorizationService authorizationService;
 
-        public AccountController(IAuthorizationService authorizationService)
-        {
-            this.authorizationService = authorizationService;
-        }
-        public IActionResult CheckSignInAsync()
+        [HttpGet]
+        public IActionResult RouteUsingSignInPolicy()
         {
             return View();
         }
+
         public IActionResult AccessDenied()
         {
             return View();

@@ -40,13 +40,13 @@ namespace eXtolloURLWhitelist
 
             services.AddDbContextPool<SurveyDBContext>(option => option.UseSqlServer(config.GetConnectionString("Survey")));
             services.AddScoped<ISurveyRepository, SurveyRepository>();
-            services.AddAuthorization(options => 
+           /* services.AddAuthorization(options => 
             {
                 options.AddPolicy("Admin", policy =>
                 {
                     policy.RequireClaim("groups", "316b4979-8b43-462e-a8db-6a53065ca21b");
                 });
-            });
+            });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,23 +58,8 @@ namespace eXtolloURLWhitelist
             }
             else
             {
-                app.UseExceptionHandler(errorApp =>
-                {
-                    errorApp.Run(async context =>
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError; ;
-                        context.Response.ContentType = "text/html";
-
-                        await context.Response.WriteAsync("<html lang=\"en\"><body>\r\n");
-                        await context.Response.WriteAsync("ERROR!<br><br>\r\n");
-
-                        var exceptionHandlerPathFeature =
-                            context.Features.Get<IExceptionHandlerPathFeature>();
-
-                        await context.Response.WriteAsync(exceptionHandlerPathFeature.Error.Message.ToString());
-                    });
-                });
-                app.UseHsts();
+                app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
 
             app.UseStaticFiles();
@@ -89,7 +74,7 @@ namespace eXtolloURLWhitelist
             {
                endpoints.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Account}/{action=CheckSignInAsync}/{Id?}");
+                pattern: "{controller=Survey}/{action=Index}/{Id?}");
                 
                 endpoints.MapRazorPages();
             });
