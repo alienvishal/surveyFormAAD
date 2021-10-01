@@ -14,8 +14,9 @@ namespace eXtolloURLWhitelist.Models
         bool IsSurveyAdded(SurveyViewModel model);
         bool IsSurveyTaken(SurveyViewModel model);
         bool IsQuestionAdded(AddQuestionViewModel model);
-        public Question UpdatedQuestion(Question question);
-        public Question DeleteQuestion(int id);
-        public List<ListUserViewModel> GetAllResult();
+        Question UpdatedQuestion(Question question);
+        Question DeleteQuestion(int id);
+        List<ListUserViewModel> GetAllResult();
+        List<ListSurveyUserViewModel> GetUserList(); 
     }
 }

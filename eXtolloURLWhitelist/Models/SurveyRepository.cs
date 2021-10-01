@@ -80,6 +80,28 @@ namespace eXtolloURLWhitelist.Models
             return surveyDBContext.Questions.Find(id);
         }
 
+        public List<ListSurveyUserViewModel> GetUserList()
+        {
+            var users = (from usr in surveyDBContext.Users
+                         join project in surveyDBContext.ProjectInstances
+                         on usr.ProjectId equals project.Project_Id
+                         select new
+                         {
+                               Username = usr.UserName,
+                               Project = project.ProjectName
+                         }).ToList();
+            var listuser = new List<ListSurveyUserViewModel>();
+            foreach (var user in users)
+            {
+                ListSurveyUserViewModel model = new ListSurveyUserViewModel();
+                model.UserId = user.Username;
+                model.ProjectName = user.Project;
+
+                listuser.Add(model);
+            }
+            return listuser;
+        }
+
         public bool IsQuestionAdded(AddQuestionViewModel model)
         {
             Question question = new Question();
@@ -96,6 +118,13 @@ namespace eXtolloURLWhitelist.Models
         public bool IsSurveyAdded(SurveyViewModel model)
         {
             int flag = 0;
+            Users usr = new Users
+            {
+                UserName = model.UserId,
+                ProjectId = model.SelectedInstance
+            };
+            var user = surveyDBContext.Users.Add(usr);
+            surveyDBContext.SaveChanges();
             for (int i = 0; i < model.Questions.Count; i++)
             {
                 Result result = new Result
@@ -108,7 +137,7 @@ namespace eXtolloURLWhitelist.Models
                 var res = surveyDBContext.Results.Add(result);
                 surveyDBContext.SaveChanges();
 
-                if (res == null)
+                if (res == null || user == null)
                     flag = 0;
                 else
                     flag = 1;

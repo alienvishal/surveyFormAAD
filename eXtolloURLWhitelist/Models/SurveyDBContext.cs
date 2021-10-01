@@ -16,5 +16,6 @@ namespace eXtolloURLWhitelist.Models
         public DbSet<ProjectInstance> ProjectInstances { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Result> Results { get; set; }
+        public DbSet<Users> Users { get; set; }
     }
 }

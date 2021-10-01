@@ -9,6 +9,7 @@
         height: 50px;
     }
 </style>
+@{DateTime upcomingDate = new DateTime(2021, 10, 02);}
 
 @if (User.Identity.IsAuthenticated)
 {
@@ -22,8 +23,38 @@
     <h6 class="text-right" style="font-size:15px;"><a asp-action="Logout" asp-controller="Account">Log Out</a></h6>
 }
 
-<form method="post" asp-antiforgery="true" id="frm_submit">
-    <input type="hidden" value="@User.Identity.Name" asp-for="UserId" />
+@if (upcomingDate.Date <= DateTime.Now.Date)
+{
+    <div class="alert alert-info alert-dismissable">
+        <p>Dear eXtollo DSVM and SecVM Administrators,</p>
+        <br><br>
+        <p>
+            The eXtollo survey regarding the outgoing internet traffic from your eXtollo DSVMs or the eXtollo SecVMs is closed.
+            The results of the survey will be shared with you via Mail to give you the chance of double-checking and stopping the deletion of still needed URLs. If you wish to contact us regarding the survey please create a new eXtollo Service Request <a href="https://coe.detss.corpintra.net/servicedesk/customer/portal/1/group/3">JIRA Web Ticket</a>
+            Thank you for your support by providing your feedback.
+        </p>
+        <br>
+        <p>
+            Kind Regards,
+            <br>
+            eXtollo Operation
+        </p>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <p>Dear eXtollo DSVM and SecVM  Administrators,</p>
+        <br>
+        <p>Welcome to the eXtollo survey.</p>
+        <br>
+        <p>You are requested to provide feedback on the outgoing internet traffic from your eXtollo DSVMs or the eXtollo SecVMs. We kindly ask you to identify until 24.09.2021, which requested URLs are still necessary for your Instance. Invalid URL entries are going to be deleted by end of september 2021.</p>
+        <br>
+        <p>Before the final deletion date, a list of survey results will be shared with you via Mail to give you the chance of double-checking and stopping the deletion of still needed URLs. </p>
+        <br>
+        <p>If you are facing any technical issues related to login or any other functionality, please create a ticket via CISM using the following webticket:  <a href="https://coe.detss.corpintra.net/servicedesk/customer/portal/1/group/3"><b>JIRA Ticket</b></a> </p>
+    </div>
+
     <table>
         <tr class="alert alert-info">
             <td style="width:11%"><strong>Please Note:</strong></td>
@@ -41,50 +72,54 @@
             </td>
         </tr>
     </table>
-    <br /><br /><br />
-    <table cellpadding="30">
-        <tr>
-            <td>
-                <label asp-for="SelectedInstance">Instance-ID<span style="color:red">*</span></label>
-            </td>
-            <td>
-                <select asp-for="SelectedInstance" asp-items="@(new SelectList(ViewBag.ProjectInstance, "Project_Id", "ProjectName"))" id="multipleSelectDropDownList"></select>
-                <span class="field-validation-valid text-danger" asp-validation-for="SelectedInstance"></span>
-            </td>
-        </tr>
-        @if (Model.Questions.Any())
-        {
-            int count = 1;
-            foreach (var question in Model.Questions)
+
+     <br /><br /><br />
+    <form method="post" asp-antiforgery="true" id="frm_submit">
+        <input type="hidden" value="@User.Identity.Name" asp-for="UserId" />
+        <table cellpadding="30">
+            <tr>
+                <td>
+                    <label asp-for="SelectedInstance">Instance-ID<span style="color:red">*</span></label>
+                </td>
+                <td>
+                    <select asp-for="SelectedInstance" asp-items="@(new SelectList(ViewBag.ProjectInstance, "Project_Id", "ProjectName"))" id="multipleSelectDropDownList"></select>
+                    <span class="field-validation-valid text-danger" asp-validation-for="SelectedInstance"></span>
+                </td>
+            </tr>
+            @if (Model.Questions.Any())
+            {
+                int count = 1;
+                foreach (var question in Model.Questions)
+                {
+                    <tr>
+                        <td>
+                            @count : @question.Q_Text
+                            <input type="hidden" asp-for="Questions[count - 1].Q_Id" />
+                            <input type="hidden" asp-for="Questions[count - 1].Q_Text" />
+                        </td>
+                        <td>
+                            <label class="btn btn-primary">
+                                <input asp-for="SelectedAnswer[count - 1]" type="radio" value="@Model.RadioButton[0]" />@Model.RadioButton[0]
+                            </label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <label class="btn btn-danger">
+                                <input checked="checked" asp-for="SelectedAnswer[count - 1]" type="radio" value="@Model.RadioButton[1]" /> @Model.RadioButton[1]
+                            </label>
+                        </td>
+                    </tr>
+                    count++;
+                }
+            }
+            else
             {
                 <tr>
-                    <td>
-                        @count : @question.Q_Text
-                        <input type="hidden" asp-for="Questions[count - 1].Q_Id" />
-                        <input type="hidden" asp-for="Questions[count - 1].Q_Text" />
-                    </td>
-                    <td>
-                        <label class="btn btn-primary">
-                            <input asp-for="SelectedAnswer[count - 1]" type="radio" value="@Model.RadioButton[0]" />@Model.RadioButton[0]
-                        </label>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <label class="btn btn-danger">
-                            <input checked="checked" asp-for="SelectedAnswer[count - 1]" type="radio" value="@Model.RadioButton[1]" /> @Model.RadioButton[1]
-                        </label>
-                    </td>
+                    <td colspan="2">No Question has been step up</td>
                 </tr>
-                count++;
             }
-        }
-        else
-        {
-            <tr>
-                <td colspan="2">No Question has been step up</td>
-            </tr>
-        }
-    </table>
-    <input type="submit" value="Submit" style="float:right;" class="new-btn" onclick="return confirm ('You are about to submit your input and will not be able to edit after submission. Are you sure?' )" />
-</form>
+        </table>
+        <input type="submit" value="Submit" style="float:right;" class="new-btn" onclick="return confirm ('You are about to submit your input and will not be able to edit after submission. Are you sure?' )" />
+    </form>
+}
 
 @section Scripts{
 

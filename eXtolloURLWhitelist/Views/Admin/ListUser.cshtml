@@ -1,0 +1,32 @@
+﻿@model IEnumerable<ListSurveyUserViewModel>
+
+@{
+    ViewBag.Title = "ListUser";
+}
+
+<h2 style="margin-top:100px;">Show User Participation</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Email Address</th>
+            <th>Project ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            @foreach(var user in Model)
+            {
+                <tr>
+                    <td>@user.UserId</td>
+                    <td>@user.ProjectName</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3" class="text-center"> No User has given Feedback Yet!!</td>
+            </tr>
+        }
+

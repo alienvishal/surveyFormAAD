@@ -14,6 +14,7 @@ namespace eXtolloURLWhitelist.Controllers
     {
         private readonly ILogger<AdminController> logger;
         private readonly ISurveyRepository surveyRepository;
+        private string[] Users = new string[] { "vishal@apac.corpdir.net", "kasridh@apac.corpdir.net", "nper@emea.corpdir.net", "maikewi@emea.corpdir.net" };
 
         public AdminController(ILogger<AdminController> _logger, ISurveyRepository surveyRepository)
         {
@@ -23,7 +24,7 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpGet]
         public IActionResult AddQuestion()
         {
-            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            if (!Users.Contains(User.Identity.Name))
             {
                 return RedirectToAction("Index", "Survey");
             }
@@ -34,7 +35,7 @@ namespace eXtolloURLWhitelist.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddQuestion(AddQuestionViewModel model)
         {
-            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            if(! Users.Contains(User.Identity.Name))
             {
                 return RedirectToAction("Index", "Survey");
             }
@@ -54,7 +55,7 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpGet]
         public IActionResult ListQuestion()
         {
-            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            if (!Users.Contains(User.Identity.Name))
             {
                 return RedirectToAction("Index", "Survey");
             }
@@ -64,7 +65,7 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            if (!Users.Contains(User.Identity.Name))
             {
                 return RedirectToAction("Index", "Survey");
             }
@@ -88,7 +89,7 @@ namespace eXtolloURLWhitelist.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(EditQuestionViewModel model)
         {
-            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            if (!Users.Contains(User.Identity.Name))
             {
                 return RedirectToAction("Index", "Survey");
             }
@@ -111,7 +112,7 @@ namespace eXtolloURLWhitelist.Controllers
 
         public IActionResult Delete(int id)
         {
-            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            if (!Users.Contains(User.Identity.Name))
             {
                 return RedirectToAction("Index", "Survey");
             }
@@ -123,11 +124,20 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpGet]
         public IActionResult Result()
         {
-            if (User.Identity.Name != "vishal@apac.corpdir.net")
+            if (!Users.Contains(User.Identity.Name))
             {
                 return RedirectToAction("Index", "Survey");
             }
             return View(surveyRepository.GetAllResult());
+        }
+        [HttpGet]
+        public IActionResult ListUser()
+        {
+            if(!Users.Contains(User.Identity.Name))
+            {
+                return RedirectToAction("Index", "Survey");
+            }
+            return View(surveyRepository.GetUserList());
         }
     }
 }

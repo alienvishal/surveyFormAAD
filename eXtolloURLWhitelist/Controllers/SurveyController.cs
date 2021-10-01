@@ -14,6 +14,7 @@ namespace eXtolloURLWhitelist.Controllers
     {
         private readonly ILogger<SurveyController> logger;
         private readonly ISurveyRepository surveyRepository;
+        private string[] Users = new string[] { "vishal@apac.corpdir.net", "kasridh@apac.corpdir.net", "nper@emea.corpdir.net", "maikewi@emea.corpdir.net" };
 
         public SurveyController(ILogger<SurveyController> logger, ISurveyRepository surveyRepository)
         {
@@ -24,7 +25,7 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            if (User.Identity.Name == "vishal@apac.corpdir.net")
+            if (Users.Contains(User.Identity.Name))
             {
                 return RedirectToAction("AddQuestion", "Admin");
             }
@@ -40,7 +41,7 @@ namespace eXtolloURLWhitelist.Controllers
         [HttpPost]
         public IActionResult Index(SurveyViewModel model)
         {
-            if (User.Identity.Name == "vishal@apac.corpdir.net")
+            if (Users.Contains(User.Identity.Name))
             {
                 return RedirectToAction("AddQuestion", "Admin");
             }
